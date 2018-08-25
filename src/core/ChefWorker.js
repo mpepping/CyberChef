@@ -7,9 +7,18 @@
  */
 
 import "babel-polyfill";
-import Chef from "./Chef.js";
-import OperationConfig from "./config/MetaConfig.js";
-import OpModules from "./config/modules/Default.js";
+import Chef from "./Chef";
+import OperationConfig from "./config/OperationConfig.json";
+import OpModules from "./config/modules/OpModules";
+
+// Add ">" to the start of all log messages in the Chef Worker
+import loglevelMessagePrefix from "loglevel-message-prefix";
+
+loglevelMessagePrefix(log, {
+    prefixes: [],
+    staticPrefixes: [">"],
+    prefixFormat: "%p"
+});
 
 
 // Set up Chef instance
@@ -42,12 +51,17 @@ self.postMessage({
 self.addEventListener("message", function(e) {
     // Handle message
     const r = e.data;
+    log.debug("ChefWorker receiving command '" + r.action + "'");
+
     switch (r.action) {
         case "bake":
             bake(r.data);
             break;
         case "silentBake":
             silentBake(r.data);
+            break;
+        case "getDishAs":
+            getDishAs(r.data);
             break;
         case "docURL":
             // Used to set the URL of the current document so that scripts can be
@@ -60,6 +74,9 @@ self.addEventListener("message", function(e) {
                 r.data.direction,
                 r.data.pos
             );
+            break;
+        case "setLogLevel":
+            log.setLevel(r.data, false);
             break;
         default:
             break;
@@ -74,7 +91,7 @@ self.addEventListener("message", function(e) {
  */
 async function bake(data) {
     // Ensure the relevant modules are loaded
-    loadRequiredModules(data.recipeConfig);
+    self.loadRequiredModules(data.recipeConfig);
 
     try {
         const response = await self.chef.bake(
@@ -86,13 +103,17 @@ async function bake(data) {
         );
 
         self.postMessage({
-            action: "bakeSuccess",
-            data: response
+            action: "bakeComplete",
+            data: Object.assign(response, {
+                id: data.id
+            })
         });
     } catch (err) {
         self.postMessage({
             action: "bakeError",
-            data: err
+            data: Object.assign(err, {
+                id: data.id
+            })
         });
     }
 }
@@ -112,18 +133,16 @@ function silentBake(data) {
 
 
 /**
- * Checks that all required modules are loaded and loads them if not.
- *
- * @param {Object} recipeConfig
+ * Translates the dish to a given type.
  */
-function loadRequiredModules(recipeConfig) {
-    recipeConfig.forEach(op => {
-        let module = self.OperationConfig[op.op].module;
+async function getDishAs(data) {
+    const value = await self.chef.getDishAs(data.dish, data.type);
 
-        if (!OpModules.hasOwnProperty(module)) {
-            console.log("Loading module " + module);
-            self.sendStatusMessage("Loading module " + module);
-            self.importScripts(self.docURL + "/" + module + ".js");
+    self.postMessage({
+        action: "dishReturned",
+        data: {
+            value: value,
+            id: data.id
         }
     });
 }
@@ -146,6 +165,25 @@ function calculateHighlights(recipeConfig, direction, pos) {
         data: pos
     });
 }
+
+
+/**
+ * Checks that all required modules are loaded and loads them if not.
+ *
+ * @param {Object} recipeConfig
+ */
+self.loadRequiredModules = function(recipeConfig) {
+    recipeConfig.forEach(op => {
+        const module = self.OperationConfig[op.op].module;
+
+        if (!OpModules.hasOwnProperty(module)) {
+            log.info(`Loading ${module} module`);
+            self.sendStatusMessage(`Loading ${module} module`);
+            self.importScripts(`${self.docURL}/${module}.js`);
+            self.sendStatusMessage("");
+        }
+    });
+};
 
 
 /**

@@ -1,6 +1,6 @@
 {
     "parserOptions": {
-        "ecmaVersion": 8,
+        "ecmaVersion": 9,
         "ecmaFeatures": {
             "impliedStrict": true
         },
@@ -35,7 +35,6 @@
         }],
 
         // disable rules from base configurations
-        "no-console": "off",
         "no-control-regex": "off",
 
         // stylistic conventions
@@ -52,6 +51,7 @@
             "mode": "minimum"
         }],
         "indent": ["error", 4, {
+            "ignoreComments": true,
             "ArrayExpression": "first",
             "SwitchCase": 1
         }],
@@ -84,12 +84,13 @@
         "no-whitespace-before-property": "error",
         "operator-linebreak": ["error", "after"],
         "space-in-parens": "error",
-        "no-var": "error"
+        "no-var": "error",
+        "prefer-const": "error"
     },
     "globals": {
         "$": false,
         "jQuery": false,
-        "moment": false,
+        "log": false,
 
         "COMPILE_TIME": false,
         "COMPILE_MSG": false,
