@@ -1,5 +1,6 @@
 const webpack = require("webpack");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const path = require("path");
 
 /**
  * Webpack configuration details for use with Grunt.
@@ -30,6 +31,9 @@ const banner = `/**
  * limitations under the License.
  */`;
 
+const vendorCSS = new ExtractTextPlugin("vendor.css");
+const projectCSS = new ExtractTextPlugin("styles.css");
+
 module.exports = {
     plugins: [
         new webpack.ProvidePlugin({
@@ -42,7 +46,11 @@ module.exports = {
             raw: true,
             entryOnly: true
         }),
-        new ExtractTextPlugin("styles.css")
+        new webpack.DefinePlugin({
+            "process.browser": "true"
+        }),
+        vendorCSS,
+        projectCSS
     ],
     resolve: {
         alias: {
@@ -54,8 +62,13 @@ module.exports = {
             {
                 test: /\.m?js$/,
                 exclude: /node_modules\/(?!jsesc|crypto-api)/,
+                options: {
+                    configFile: path.resolve(__dirname, "babel.config.js"),
+                    cacheDirectory: true,
+                    compact: false
+                },
                 type: "javascript/auto",
-                loader: "babel-loader?compact=false"
+                loader: "babel-loader"
             },
             {
                 test: /forge.min.js$/,
@@ -67,7 +80,7 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: ExtractTextPlugin.extract({
+                use: projectCSS.extract({
                     use: [
                         { loader: "css-loader" },
                         { loader: "postcss-loader" },
@@ -76,7 +89,7 @@ module.exports = {
             },
             {
                 test: /\.scss$/,
-                use: ExtractTextPlugin.extract({
+                use: vendorCSS.extract({
                     use: [
                         { loader: "css-loader" },
                         { loader: "sass-loader" }
@@ -113,7 +126,11 @@ module.exports = {
         chunks: false,
         modules: false,
         entrypoints: false,
-        warningsFilter: [/source-map/, /dependency is an expression/],
+        warningsFilter: [
+            /source-map/,
+            /dependency is an expression/,
+            /export 'default'/
+        ],
     },
     node: {
         fs: "empty"
