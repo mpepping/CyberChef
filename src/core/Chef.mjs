@@ -89,23 +89,26 @@ class Chef {
             progress = err.progress;
         }
 
-        // Depending on the size of the output, we may send it back as a string or an ArrayBuffer.
-        // This can prevent unnecessary casting as an ArrayBuffer can be easily downloaded as a file.
-        // The threshold is specified in KiB.
-        const threshold = (options.ioDisplayThreshold || 1024) * 1024;
-        const returnType = this.dish.size > threshold ? Dish.ARRAY_BUFFER : Dish.STRING;
-
         // Create a raw version of the dish, unpresented
         const rawDish = this.dish.clone();
 
         // Present the raw result
         await recipe.present(this.dish);
 
+        // Depending on the size of the output, we may send it back as a string or an ArrayBuffer.
+        // This can prevent unnecessary casting as an ArrayBuffer can be easily downloaded as a file.
+        // The threshold is specified in KiB.
+        const threshold = (options.ioDisplayThreshold || 1024) * 1024;
+        const returnType =
+            this.dish.size > threshold ?
+                Dish.ARRAY_BUFFER :
+                this.dish.type === Dish.HTML ?
+                    Dish.HTML :
+                    Dish.STRING;
+
         return {
             dish: rawDish,
-            result: this.dish.type === Dish.HTML ?
-                await this.dish.get(Dish.HTML, notUTF8) :
-                await this.dish.get(returnType, notUTF8),
+            result: await this.dish.get(returnType, notUTF8),
             type: Dish.enumLookup(this.dish.type),
             progress: progress,
             duration: new Date().getTime() - startTime,
@@ -157,9 +160,9 @@ class Chef {
      * @param {number} pos.end - The end offset.
      * @returns {Object}
      */
-    calculateHighlights(recipeConfig, direction, pos) {
+    async calculateHighlights(recipeConfig, direction, pos) {
         const recipe = new Recipe(recipeConfig);
-        const highlights = recipe.generateHighlightList();
+        const highlights = await recipe.generateHighlightList();
 
         if (!highlights) return false;
 

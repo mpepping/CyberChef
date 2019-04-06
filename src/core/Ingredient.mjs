@@ -23,9 +23,13 @@ class Ingredient {
         this._value = null;
         this.disabled = false;
         this.hint = "";
+        this.rows = 0;
         this.toggleValues = [];
         this.target = null;
         this.defaultIndex = 0;
+        this.min = null;
+        this.max = null;
+        this.step = 1;
 
         if (ingredientConfig) {
             this._parseConfig(ingredientConfig);
@@ -45,9 +49,13 @@ class Ingredient {
         this.defaultValue = ingredientConfig.value;
         this.disabled = !!ingredientConfig.disabled;
         this.hint = ingredientConfig.hint || false;
+        this.rows = ingredientConfig.rows || false;
         this.toggleValues = ingredientConfig.toggleValues;
         this.target = typeof ingredientConfig.target !== "undefined" ? ingredientConfig.target : null;
         this.defaultIndex = typeof ingredientConfig.defaultIndex !== "undefined" ? ingredientConfig.defaultIndex : 0;
+        this.min = ingredientConfig.min;
+        this.max = ingredientConfig.max;
+        this.step = ingredientConfig.step;
     }
 
 

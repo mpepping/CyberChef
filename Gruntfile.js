@@ -151,7 +151,7 @@ module.exports = function (grunt) {
             },
             configs: ["*.{js,mjs}"],
             core: ["src/core/**/*.{js,mjs}", "!src/core/vendor/**/*", "!src/core/operations/legacy/**/*"],
-            web: ["src/web/**/*.{js,mjs}"],
+            web: ["src/web/**/*.{js,mjs}", "!src/web/static/**/*"],
             node: ["src/node/**/*.{js,mjs}"],
             tests: ["tests/**/*.{js,mjs}"],
         },
@@ -194,7 +194,8 @@ module.exports = function (grunt) {
                         sitemap: "./src/web/static/sitemap.js"
                     }, moduleEntryPoints),
                     output: {
-                        path: __dirname + "/build/prod"
+                        path: __dirname + "/build/prod",
+                        globalObject: "this"
                     },
                     resolve: {
                         alias: {
@@ -283,7 +284,8 @@ module.exports = function (grunt) {
                     warningsFilter: [
                         /source-map/,
                         /dependency is an expression/,
-                        /export 'default'/
+                        /export 'default'/,
+                        /Can't resolve 'sodium'/
                     ],
                 }
             },
@@ -298,6 +300,9 @@ module.exports = function (grunt) {
                         alias: {
                             "./config/modules/OpModules": "./config/modules/Default"
                         }
+                    },
+                    output: {
+                        globalObject: "this",
                     },
                     plugins: [
                         new webpack.DefinePlugin(BUILD_CONSTANTS),
@@ -391,9 +396,7 @@ module.exports = function (grunt) {
             generateConfig: {
                 command: [
                     "echo '\n--- Regenerating config files. ---'",
-                    "mkdir -p src/core/config/modules",
-                    "echo 'export default {};\n' > src/core/config/modules/OpModules.mjs",
-                    "echo '[]\n' > src/core/config/OperationConfig.json",
+                    "echo [] > src/core/config/OperationConfig.json",
                     "node --experimental-modules --no-warnings --no-deprecation src/core/config/scripts/generateOpsIndex.mjs",
                     "node --experimental-modules --no-warnings --no-deprecation src/core/config/scripts/generateConfig.mjs",
                     "echo '--- Config scripts finished. ---\n'"

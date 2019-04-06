@@ -11,13 +11,22 @@ module.exports = function(api) {
                     "node": "6.5"
                 },
                 "modules": false,
-                "useBuiltIns": "entry"
+                "useBuiltIns": "entry",
+                "corejs": 3
             }]
         ],
         "plugins": [
-            ["babel-plugin-transform-builtin-extend", {
-                "globals": ["Error"]
-            }]
+            "babel-plugin-syntax-dynamic-import",
+            [
+                "babel-plugin-transform-builtin-extend", {
+                    "globals": ["Error"]
+                }
+            ],
+            [
+                "@babel/plugin-transform-runtime", {
+                    "regenerator": true
+                }
+            ]
         ]
     };
 };

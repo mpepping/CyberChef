@@ -137,12 +137,16 @@ class Manager {
         this.addDynamicListener("#rec-list li.operation > div", "dblclick", this.recipe.operationChildDblclick, this.recipe);
         this.addDynamicListener("#rec-list .dropdown-menu.toggle-dropdown a", "click", this.recipe.dropdownToggleClick, this.recipe);
         this.addDynamicListener("#rec-list", "operationremove", this.recipe.opRemove.bind(this.recipe));
+        this.addDynamicListener("textarea.arg", "dragover", this.recipe.textArgDragover, this.recipe);
+        this.addDynamicListener("textarea.arg", "dragleave", this.recipe.textArgDragLeave, this.recipe);
+        this.addDynamicListener("textarea.arg", "drop", this.recipe.textArgDrop, this.recipe);
 
         // Input
         this.addMultiEventListener("#input-text", "keyup", this.input.inputChange, this.input);
         this.addMultiEventListener("#input-text", "paste", this.input.inputPaste, this.input);
         document.getElementById("reset-layout").addEventListener("click", this.app.resetLayout.bind(this.app));
         document.getElementById("clr-io").addEventListener("click", this.input.clearIoClick.bind(this.input));
+        this.addListeners("#open-file", "change", this.input.inputOpen, this.input);
         this.addListeners("#input-text,#input-file", "dragover", this.input.inputDragover, this.input);
         this.addListeners("#input-text,#input-file", "dragleave", this.input.inputDragleave, this.input);
         this.addListeners("#input-text,#input-file", "drop", this.input.inputDrop, this.input);
@@ -169,6 +173,7 @@ class Manager {
         this.addDynamicListener("#output-file-download", "click", this.output.downloadFile, this.output);
         this.addDynamicListener("#output-file-slice i", "click", this.output.displayFileSlice, this.output);
         document.getElementById("show-file-overlay").addEventListener("click", this.output.showFileOverlayClick.bind(this.output));
+        this.addDynamicListener(".extract-file,.extract-file i", "click", this.output.extractFileClick, this.output);
 
         // Options
         document.getElementById("options").addEventListener("click", this.options.optionsClick.bind(this.options));

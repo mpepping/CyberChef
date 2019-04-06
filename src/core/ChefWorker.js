@@ -6,7 +6,6 @@
  * @license Apache-2.0
  */
 
-import "babel-polyfill";
 import Chef from "./Chef";
 import OperationConfig from "./config/OperationConfig.json";
 import OpModules from "./config/modules/OpModules";
@@ -157,8 +156,8 @@ async function getDishAs(data) {
  * @param {number} pos.start - The start offset.
  * @param {number} pos.end - The end offset.
  */
-function calculateHighlights(recipeConfig, direction, pos) {
-    pos = self.chef.calculateHighlights(recipeConfig, direction, pos);
+async function calculateHighlights(recipeConfig, direction, pos) {
+    pos = await self.chef.calculateHighlights(recipeConfig, direction, pos);
 
     self.postMessage({
         action: "highlightsCalculated",

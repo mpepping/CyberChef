@@ -10,7 +10,6 @@
  * @copyright Crown Copyright 2017
  * @license Apache-2.0
  */
-import "babel-polyfill";
 
 // Define global environment functions
 global.ENVIRONMENT_IS_WORKER = function() {
@@ -33,6 +32,7 @@ import "./tests/BitwiseOp";
 import "./tests/ByteRepr";
 import "./tests/CartesianProduct";
 import "./tests/CharEnc";
+import "./tests/Charts";
 import "./tests/Checksum";
 import "./tests/Ciphers";
 import "./tests/Code";
@@ -45,7 +45,6 @@ import "./tests/DateTime";
 import "./tests/ExtractEmailAddresses";
 import "./tests/Fork";
 import "./tests/FromDecimal";
-import "./tests/FromGeohash";
 import "./tests/Hash";
 import "./tests/HaversineDistance";
 import "./tests/Hexdump";
@@ -77,12 +76,19 @@ import "./tests/SetUnion";
 import "./tests/StrUtils";
 import "./tests/SymmetricDifference";
 import "./tests/TextEncodingBruteForce";
-import "./tests/ToGeohash";
 import "./tests/TranslateDateTimeFormat";
 import "./tests/Magic";
 import "./tests/ParseTLV";
 import "./tests/Media";
 import "./tests/ToFromInsensitiveRegex";
+import "./tests/YARA.mjs";
+import "./tests/ConvertCoordinateFormat";
+import "./tests/Enigma";
+import "./tests/Bombe";
+import "./tests/MultipleBombe";
+import "./tests/Typex";
+import "./tests/BLAKE2b";
+import "./tests/BLAKE2s";
 
 // Cannot test operations that use the File type yet
 //import "./tests/SplitColourChannels";
