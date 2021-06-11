@@ -4,9 +4,9 @@
  * @license Apache-2.0
  */
 
-import Operation from "../Operation";
-import Utils from "../Utils";
-import {INPUT_DELIM_OPTIONS} from "../lib/Delim";
+import Operation from "../Operation.mjs";
+import Utils from "../Utils.mjs";
+import {INPUT_DELIM_OPTIONS} from "../lib/Delim.mjs";
 
 /**
  * Sort operation
@@ -125,7 +125,7 @@ class Sort extends Operation {
                 const ret = a_[i].localeCompare(b_[i]); // Compare strings
                 if (ret !== 0) return ret;
             }
-            if (!isNaN(a_[i]) && !isNaN(a_[i])) { // Compare numbers
+            if (!isNaN(a_[i]) && !isNaN(b_[i])) { // Compare numbers
                 if (a_[i] - b_[i] !== 0) return a_[i] - b_[i];
             }
         }
@@ -163,7 +163,7 @@ class Sort extends Operation {
                 const ret = a_[i].localeCompare(b_[i]); // Compare strings
                 if (ret !== 0) return ret;
             }
-            if (!isNaN(a_[i]) && !isNaN(a_[i])) { // Compare numbers
+            if (!isNaN(a_[i]) && !isNaN(b_[i])) { // Compare numbers
                 if (a_[i] - b_[i] !== 0) return a_[i] - b_[i];
             }
         }

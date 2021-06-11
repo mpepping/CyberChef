@@ -4,9 +4,9 @@
  * @license Apache-2.0
  */
 
-import Operation from "../Operation";
-import Utils from "../Utils";
-import Stream from "../lib/Stream";
+import Operation from "../Operation.mjs";
+import Utils from "../Utils.mjs";
+import Stream from "../lib/Stream.mjs";
 
 /**
  * Untar operation
@@ -23,13 +23,13 @@ class Untar extends Operation {
         this.module = "Compression";
         this.description = "Unpacks a tarball and displays it per file.";
         this.infoURL = "https://wikipedia.org/wiki/Tar_(computing)";
-        this.inputType = "byteArray";
+        this.inputType = "ArrayBuffer";
         this.outputType = "List<File>";
         this.presentType = "html";
         this.args = [];
-        this.patterns = [
+        this.checks = [
             {
-                "match": "^.{257}\\x75\\x73\\x74\\x61\\x72",
+                "pattern": "^.{257}\\x75\\x73\\x74\\x61\\x72",
                 "flags": "",
                 "args": []
             }
@@ -37,11 +37,12 @@ class Untar extends Operation {
     }
 
     /**
-     * @param {byteArray} input
+     * @param {ArrayBuffer} input
      * @param {Object[]} args
      * @returns {List<File>}
      */
     run(input, args) {
+        input = new Uint8Array(input);
         const stream = new Stream(input),
             files = [];
 

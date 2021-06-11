@@ -6,13 +6,13 @@
  * @license Apache-2.0
  */
 
-import Utils from "../Utils";
-
+import Utils from "../Utils.mjs";
+import OperationError from "../errors/OperationError.mjs";
 
 /**
  * Base64's the input byte array using the given alphabet, returning a string.
  *
- * @param {byteArray|Uint8Array|string} data
+ * @param {byteArray|Uint8Array|ArrayBuffer|string} data
  * @param {string} [alphabet="A-Za-z0-9+/="]
  * @returns {string}
  *
@@ -25,11 +25,17 @@ import Utils from "../Utils";
  */
 export function toBase64(data, alphabet="A-Za-z0-9+/=") {
     if (!data) return "";
+    if (data instanceof ArrayBuffer) {
+        data = new Uint8Array(data);
+    }
     if (typeof data == "string") {
         data = Utils.strToByteArray(data);
     }
 
     alphabet = Utils.expandAlphRange(alphabet).join("");
+    if (alphabet.length !== 64 && alphabet.length !== 65) { // Allow for padding
+        throw new OperationError(`Invalid Base64 alphabet length (${alphabet.length}): ${alphabet}`);
+    }
 
     let output = "",
         chr1, chr2, chr3,
@@ -63,7 +69,7 @@ export function toBase64(data, alphabet="A-Za-z0-9+/=") {
 /**
  * UnBase64's the input string using the given alphabet, returning a byte array.
  *
- * @param {byteArray} data
+ * @param {string} data
  * @param {string} [alphabet="A-Za-z0-9+/="]
  * @param {string} [returnType="string"] - Either "string" or "byteArray"
  * @param {boolean} [removeNonAlphChars=true]
@@ -83,6 +89,9 @@ export function fromBase64(data, alphabet="A-Za-z0-9+/=", returnType="string", r
 
     alphabet = alphabet || "A-Za-z0-9+/=";
     alphabet = Utils.expandAlphRange(alphabet).join("");
+    if (alphabet.length !== 64 && alphabet.length !== 65) { // Allow for padding
+        throw new OperationError(`Invalid Base64 alphabet length (${alphabet.length}): ${alphabet}`);
+    }
 
     const output = [];
     let chr1, chr2, chr3,
@@ -139,4 +148,8 @@ export const ALPHABET_OPTIONS = [
     {name: "BinHex: !-,-0-689@A-NP-VX-Z[`a-fh-mp-r", value: "!-,-0-689@A-NP-VX-Z[`a-fh-mp-r"},
     {name: "ROT13: N-ZA-Mn-za-m0-9+/=", value: "N-ZA-Mn-za-m0-9+/="},
     {name: "UNIX crypt: ./0-9A-Za-z", value: "./0-9A-Za-z"},
+    {name: "Atom128: /128GhIoPQROSTeUbADfgHijKLM+n0pFWXY456xyzB7=39VaqrstJklmNuZvwcdEC", value: "/128GhIoPQROSTeUbADfgHijKLM+n0pFWXY456xyzB7=39VaqrstJklmNuZvwcdEC"},
+    {name: "Megan35: 3GHIJKLMNOPQRSTUb=cdefghijklmnopWXYZ/12+406789VaqrstuvwxyzABCDEF5", value: "3GHIJKLMNOPQRSTUb=cdefghijklmnopWXYZ/12+406789VaqrstuvwxyzABCDEF5"},
+    {name: "Zong22: ZKj9n+yf0wDVX1s/5YbdxSo=ILaUpPBCHg8uvNO4klm6iJGhQ7eFrWczAMEq3RTt2", value: "ZKj9n+yf0wDVX1s/5YbdxSo=ILaUpPBCHg8uvNO4klm6iJGhQ7eFrWczAMEq3RTt2"},
+    {name: "Hazz15: HNO4klm6ij9n+J2hyf0gzA8uvwDEq3X1Q7ZKeFrWcVTts/MRGYbdxSo=ILaUpPBC5", value: "HNO4klm6ij9n+J2hyf0gzA8uvwDEq3X1Q7ZKeFrWcVTts/MRGYbdxSo=ILaUpPBC5"}
 ];

@@ -4,11 +4,11 @@
  * @license Apache-2.0
  */
 
-import Operation from "../Operation";
-import OperationError from "../errors/OperationError";
-import Utils from "../Utils";
-import {scanForFileTypes, extractFile} from "../lib/FileType";
-import {FILE_SIGNATURES} from "../lib/FileSignatures";
+import Operation from "../Operation.mjs";
+import OperationError from "../errors/OperationError.mjs";
+import Utils from "../Utils.mjs";
+import {scanForFileTypes, extractFile} from "../lib/FileType.mjs";
+import {FILE_SIGNATURES} from "../lib/FileSignatures.mjs";
 
 /**
  * Extract Files operation
@@ -21,10 +21,25 @@ class ExtractFiles extends Operation {
     constructor() {
         super();
 
+        // Get the first extension for each signature that can be extracted
+        let supportedExts = Object.keys(FILE_SIGNATURES).map(cat => {
+            return FILE_SIGNATURES[cat]
+                .filter(sig => sig.extractor)
+                .map(sig => sig.extension.toUpperCase());
+        });
+
+        // Flatten categories and remove duplicates
+        supportedExts = [].concat(...supportedExts).unique();
+
         this.name = "Extract Files";
         this.module = "Default";
-        this.description = "Performs file carving to attempt to extract files from the input.<br><br>This operation is currently capable of carving out the following formats:<ul><li>JPG</li><li>EXE</li><li>ZIP</li><li>PDF</li><li>PNG</li><li>BMP</li><li>FLV</li><li>RTF</li><li>DOCX, PPTX, XLSX</li><li>EPUB</li><li>GZIP</li><li>ZLIB</li><li>ELF, BIN, AXF, O, PRX, SO</li></ul>";
-        this.infoURL = "https://forensicswiki.org/wiki/File_Carving";
+        this.description = `Performs file carving to attempt to extract files from the input.<br><br>This operation is currently capable of carving out the following formats:
+            <ul>
+                <li>
+                ${supportedExts.join("</li><li>")}
+                </li>
+            </ul>`;
+        this.infoURL = "https://forensicswiki.xyz/wiki/index.php?title=File_Carving";
         this.inputType = "ArrayBuffer";
         this.outputType = "List<File>";
         this.presentType = "html";
@@ -38,7 +53,7 @@ class ExtractFiles extends Operation {
             {
                 name: "Ignore failed extractions",
                 type: "boolean",
-                value: "true"
+                value: true
             }
         ]);
     }

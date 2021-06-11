@@ -4,8 +4,8 @@
  * @license Apache-2.0
  */
 
-import Utils from "./Utils";
-import {fromHex} from "./lib/Hex";
+import Utils from "./Utils.mjs";
+import {fromHex} from "./lib/Hex.mjs";
 
 /**
  * The arguments to operations.
@@ -113,6 +113,7 @@ class Ingredient {
                     return data;
                 }
             case "number":
+                if (data === null) return data;
                 number = parseFloat(data);
                 if (isNaN(number)) {
                     const sample = Utils.truncate(data.toString(), 10);

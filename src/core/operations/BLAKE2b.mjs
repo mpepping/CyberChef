@@ -4,11 +4,11 @@
  * @license Apache-2.0
  */
 
-import Operation from "../Operation";
+import Operation from "../Operation.mjs";
 import blakejs from "blakejs";
-import OperationError from "../errors/OperationError";
-import Utils from "../Utils";
-import { toBase64 } from "../lib/Base64";
+import OperationError from "../errors/OperationError.mjs";
+import Utils from "../Utils.mjs";
+import { toBase64 } from "../lib/Base64.mjs";
 
 /**
  * BLAKE2b operation
@@ -50,7 +50,7 @@ class BLAKE2b extends Operation {
     /**
      * @param {ArrayBuffer} input
      * @param {Object[]} args
-     * @returns {string} The input having been hashed with BLAKE2b in the encoding format speicifed.
+     * @returns {string} The input having been hashed with BLAKE2b in the encoding format specified.
      */
     run(input, args) {
         const [outSize, outFormat] = args;
